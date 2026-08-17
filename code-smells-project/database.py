@@ -1,13 +1,16 @@
 import sqlite3
-import os
+
+from werkzeug.security import generate_password_hash
+
+from config import Config
 
 db_connection = None
-db_path = "loja.db"
+
 
 def get_db():
     global db_connection
     if db_connection is None:
-        db_connection = sqlite3.connect(db_path, check_same_thread=False)
+        db_connection = sqlite3.connect(Config.DB_PATH, check_same_thread=False)
         db_connection.row_factory = sqlite3.Row
         cursor = db_connection.cursor()
 
@@ -73,9 +76,9 @@ def get_db():
             )
 
             usuarios = [
-                ("Admin", "admin@loja.com", "admin123", "admin"),
-                ("João Silva", "joao@email.com", "123456", "cliente"),
-                ("Maria Santos", "maria@email.com", "senha123", "cliente"),
+                ("Admin", "admin@loja.com", generate_password_hash("admin123"), "admin"),
+                ("João Silva", "joao@email.com", generate_password_hash("123456"), "cliente"),
+                ("Maria Santos", "maria@email.com", generate_password_hash("senha123"), "cliente"),
             ]
             cursor.executemany(
                 "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)",
